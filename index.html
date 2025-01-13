@@ -3,79 +3,223 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>W在线视频解析</title>
+    <title>智能视频解析</title>
     <style>
+        :root {
+            --neon-blue: #00f3ff;
+            --neon-purple: #9d00ff;
+            --dark-bg: #0a0a1f;
+            --card-bg: #151528;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
             padding: 20px;
-            background-color: #f0f2f5;
+            background: var(--dark-bg);
+            color: #fff;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0a0a1f 0%, #1a1a3a 100%);
         }
         
         .container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 25px;
+            background: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,243,255,0.1);
+            border: 1px solid rgba(0,243,255,0.1);
+            backdrop-filter: blur(10px);
         }
         
         h1 {
             text-align: center;
-            color: #333;
+            color: #fff;
+            font-size: 2.2em;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px var(--neon-blue),
+                         0 0 20px var(--neon-blue),
+                         0 0 30px var(--neon-blue);
         }
         
         .input-group {
             margin: 20px 0;
+            position: relative;
         }
         
         input[type="text"] {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            padding: 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(0,243,255,0.2);
+            border-radius: 8px;
             font-size: 16px;
+            color: #fff;
             box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 15px rgba(0,243,255,0.3);
         }
         
         select {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            padding: 12px;
+            background: var(--card-bg);
+            border: 1px solid rgba(0,243,255,0.2);
+            border-radius: 8px;
             font-size: 16px;
-            margin: 10px 0;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2300f3ff' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: calc(100% - 12px) center;
+            padding-right: 35px;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 15px rgba(0,243,255,0.3);
+        }
+        
+        select option {
+            background: var(--dark-bg);
+            color: #fff;
+            padding: 10px;
         }
         
         button {
             width: 100%;
-            padding: 12px;
-            background-color: #4CAF50;
+            padding: 14px;
+            background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             font-size: 16px;
+            font-weight: bold;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         
         button:hover {
-            background-color: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,243,255,0.4);
         }
         
-        .status {
-            text-align: center;
-            margin: 10px 0;
-            color: #666;
+        .shortcut-icons {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+        
+        .shortcut-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid rgba(0,243,255,0.2);
+            padding: 5px;
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .shortcut-icon:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(0,243,255,0.4);
+            border-color: var(--neon-blue);
+        }
+        
+        .player-container {
+            display: none;
+            margin-top: 25px;
+            width: 100%;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 0 30px rgba(0,243,255,0.2);
+        }
+        
+        .player-container.active {
+            display: block;
+        }
+        
+        .video-frame {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border: none;
+        }
+        
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(10,10,31,0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--neon-blue);
+            font-size: 18px;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0,243,255,0.1);
+            border-top: 4px solid var(--neon-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 15px;
         }
         
         .tips {
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #f8f9fa;
-            border-radius: 5px;
-            font-size: 14px;
-            color: #666;
+            margin-top: 25px;
+            padding: 20px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            border: 1px solid rgba(0,243,255,0.1);
+        }
+        
+        .tips h3 {
+            color: var(--neon-blue);
+            margin-top: 0;
+            font-size: 1.2em;
+        }
+        
+        .tips ol {
+            padding-left: 20px;
+            margin: 15px 0;
+            color: rgba(255,255,255,0.8);
+        }
+        
+        .tips li {
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        
+        .tips p {
+            color: var(--neon-purple);
+            margin-bottom: 0;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         @media (max-width: 600px) {
@@ -86,6 +230,35 @@
             .container {
                 padding: 15px;
             }
+            
+            .shortcut-icons {
+                gap: 15px;
+            }
+            
+            .shortcut-icon {
+                width: 40px;
+                height: 40px;
+            }
+        }
+
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            padding: 20px;
+            border-top: 1px solid rgba(0,243,255,0.1);
+        }
+
+        .footer .author {
+            font-size: 1.2em;
+            color: var(--neon-blue);
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        .footer .disclaimer {
+            font-size: 0.9em;
+            color: rgba(255,255,255,0.6);
+            line-height: 1.5;
         }
     </style>
 </head>
@@ -93,87 +266,85 @@
     <div class="container">
         <h1>W在线视频解析</h1>
         
+        <!-- 添加快捷方式图标 -->
+        <div class="shortcut-icons">
+            <img src="https://www.iqiyi.com/favicon.ico" alt="爱奇艺" title="爱奇艺" class="shortcut-icon" onclick="window.open('https://www.iqiyi.com')">
+            <img src="https://v.qq.com/favicon.ico" alt="腾讯视频" title="腾讯视频" class="shortcut-icon" onclick="window.open('https://v.qq.com')">
+            <img src="https://www.youku.com/favicon.ico" alt="优酷" title="优酷" class="shortcut-icon" onclick="window.open('https://www.youku.com')">
+            <img src="https://www.mgtv.com/favicon.ico" alt="芒果TV" title="芒果TV" class="shortcut-icon" onclick="window.open('https://www.mgtv.com')">
+            <img src="https://www.bilibili.com/favicon.ico" alt="哔哩哔哩" title="哔哩哔哩" class="shortcut-icon" onclick="window.open('https://www.bilibili.com')">
+        </div>
+        
         <div class="input-group">
             <input type="text" id="videoUrl" placeholder="请输入需要解析的视频链接">
         </div>
         
         <div class="input-group">
             <select id="apiSelect">
-                <option value="">正在检测可用接口...</option>
+                <option value="">选择解析接口</option>
             </select>
         </div>
         
         <button onclick="parseVideo()">开始解析</button>
         
-        <div id="status" class="status">正在检测接口...</div>
+        <!-- 添加播放器容器 -->
+        <div id="playerContainer" class="player-container">
+            <iframe id="videoFrame" class="video-frame" allowfullscreen></iframe>
+            <div id="loadingOverlay" class="loading-overlay">
+                <div class="spinner"></div>
+                <span>视频加载中...</span>
+            </div>
+        </div>
         
         <div class="tips">
-            <p>支持解析：</p>
-            <ul>
-                <li>爱奇艺VIP视频</li>
-                <li>腾讯视频VIP视频</li>
-                <li>优酷VIP视频</li>
-                <li>芒果TV VIP视频</li>
-                <li>其他主流视频网站VIP视频</li>
-            </ul>
+            <h3>使用教程</h3>
+            <ol>
+                <li>点击上方图标进入视频网站，或直接访问需要观看的视频页面</li>
+                <li>复制视频页面的完整网址（浏览器地址栏的链接）</li>
+                <li>将复制的链接粘贴到输入框中</li>
+                <li>选择一个解析接口（如果当前接口无法播放，请尝试切换其他接口）</li>
+                <li>点击"开始解析"按钮，等待视频加载完成</li>
+                <li>如需全屏观看，请点击视频右下角的全屏按钮</li>
+            </ol>
+            <p>注意：部分视频可能需要尝试多个接口才能正常播放</p>
+        </div>
+
+        <div class="footer">
+            <div class="author">© 2024 LW</div>
+            <div class="disclaimer">
+                本站仅供技术学习交流使用，严禁用于商业用途<br>
+                请支持正版，共同维护良好的网络环境
+            </div>
         </div>
     </div>
 
     <script>
+        // 更新接口列表，将更稳定的接口放在前面
         const apis = {
-            '解析接口1': 'https://jx.m3u8.tv/jiexi/?url=',
-            '解析接口2': 'https://jx.aidouer.net/?url=',
-            '解析接口3': 'https://jx.playerjy.com/?url=',
-            '解析接口4': 'https://jx.jsonplayer.com/player/?url=',
-            '解析接口5': 'https://jx.xmflv.com/?url=',
-            '解析接口6': 'https://jx.bozrc.com:4433/player/?url=',
-            '解析接口7': 'https://jx.777jiexi.com/player/?url=',
-            '解析接口8': 'https://api.jiexi.la/?url=',
-            '解析接口9': 'https://www.8090g.cn/?url='
+            '超清接口': 'https://jx.xmflv.com/?url=',
+            '高清接口': 'https://jx.m3u8.tv/jiexi/?url=',
+            '备用接口1': 'https://jx.jsonplayer.com/player/?url=',
+            '备用接口2': 'https://jx.bozrc.com:4433/player/?url=',
+            '备用接口3': 'https://jx.777jiexi.com/player/?url=',
+            '备用接口4': 'https://api.jiexi.la/?url=',
+            '备用接口5': 'https://www.8090g.cn/?url='
         };
 
-        const workingApis = {};
         const select = document.getElementById('apiSelect');
-        const status = document.getElementById('status');
+        const playerContainer = document.getElementById('playerContainer');
+        const videoFrame = document.getElementById('videoFrame');
+        const loadingOverlay = document.getElementById('loadingOverlay');
 
-        // 检测接口可用性
-        async function checkApis() {
-            status.textContent = '正在检测接口...';
-            select.innerHTML = '<option value="">检测中...</option>';
-            
-            for (const [name, url] of Object.entries(apis)) {
-                try {
-                    const testUrl = url + encodeURIComponent('https://v.qq.com/x/cover/mzc00200f995x6t.html');
-                    const response = await fetch(testUrl, {
-                        method: 'HEAD',
-                        mode: 'no-cors' // 由于跨域限制，我们只能假设接口可用
-                    });
-                    workingApis[name] = url;
-                } catch (error) {
-                    console.log(`接口 ${name} 检测失败`);
-                }
-            }
-            
-            updateApiList();
-        }
-
-        // 更新接口列表
-        function updateApiList() {
+        // 初始化接口选择
+        function initializeApis() {
             select.innerHTML = '';
-            const apiNames = Object.keys(workingApis);
-            
-            if (apiNames.length > 0) {
-                apiNames.forEach(name => {
-                    const option = document.createElement('option');
-                    option.value = name;
-                    option.textContent = name;
-                    select.appendChild(option);
-                });
-                status.textContent = `可用接口: ${apiNames.length} 个`;
-            } else {
-                select.innerHTML = '<option value="">暂无可用接口</option>';
-                status.textContent = '警告：没有可用接口';
-            }
+            Object.keys(apis).forEach(name => {
+                const option = document.createElement('option');
+                option.value = name;
+                option.textContent = name;
+                select.appendChild(option);
+            });
+            select.value = '默认接口';
         }
 
         // 解析视频
@@ -186,17 +357,27 @@
                 return;
             }
             
-            if (!selectedName || !workingApis[selectedName]) {
-                alert('请选择可用的解析接口！');
+            if (!selectedName) {
+                alert('请选择解析接口！');
                 return;
             }
             
-            const parseUrl = workingApis[selectedName] + encodeURIComponent(videoUrl);
-            window.open(parseUrl, '_blank');
+            // 显示播放器容器和加载动画
+            playerContainer.classList.add('active');
+            loadingOverlay.style.display = 'flex';
+            
+            // 设置iframe源
+            const parseUrl = apis[selectedName] + encodeURIComponent(videoUrl);
+            videoFrame.src = parseUrl;
+            
+            // 监听iframe加载完成
+            videoFrame.onload = function() {
+                loadingOverlay.style.display = 'none';
+            };
         }
 
-        // 页面加载完成后检测接口
-        window.onload = checkApis;
+        // 页面加载完成后初始化接口
+        window.onload = initializeApis;
     </script>
 </body>
 </html> 
