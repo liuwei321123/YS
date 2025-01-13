@@ -319,15 +319,29 @@
     </div>
 
     <script>
+        // 设置 PC 端的 User-Agent
+        function setPCUserAgent() {
+            const pcUA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
+            
+            // 尝试修改 UA
+            try {
+                Object.defineProperty(navigator, 'userAgent', {
+                    get: function () { return pcUA; }
+                });
+            } catch (e) {
+                console.log('UA修改失败，但不影响使用');
+            }
+        }
+
         // 更新接口列表，将更稳定的接口放在前面
         const apis = {
             '超清接口': 'https://jx.xmflv.com/?url=',
             '高清接口': 'https://jx.m3u8.tv/jiexi/?url=',
-            '备用接口1': 'https://jx.jsonplayer.com/player/?url=',
-            '备用接口2': 'https://jx.bozrc.com:4433/player/?url=',
-            '备用接口3': 'https://jx.777jiexi.com/player/?url=',
-            '备用接口4': 'https://api.jiexi.la/?url=',
-            '备用接口5': 'https://www.8090g.cn/?url='
+            '备用接口1': 'https://jx.zhanlangbu.com/?url=',
+            '备用接口2': 'https://jx.xyflv.com/?url=',
+            '备用接口3': 'https://jx.yparse.com/index.php?url=',
+            '备用接口4': 'https://jx.ppflv.com/?url=',
+            '备用接口5': 'https://jx.yangtu.top/?url='
         };
 
         const select = document.getElementById('apiSelect');
@@ -344,7 +358,7 @@
                 option.textContent = name;
                 select.appendChild(option);
             });
-            select.value = '默认接口';
+            select.value = '超清接口';  // 设置默认选中第一个接口
         }
 
         // 解析视频
@@ -367,17 +381,35 @@
             loadingOverlay.style.display = 'flex';
             
             // 设置iframe源
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            document.body.appendChild(iframe);
+            
+            // 在新创建的iframe中设置UA
+            try {
+                iframe.contentWindow.navigator.userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
+            } catch (e) {
+                console.log('iframe UA设置失败，继续使用默认UA');
+            }
+            
             const parseUrl = apis[selectedName] + encodeURIComponent(videoUrl);
             videoFrame.src = parseUrl;
             
             // 监听iframe加载完成
             videoFrame.onload = function() {
                 loadingOverlay.style.display = 'none';
+                // 移除临时iframe
+                if (iframe) {
+                    document.body.removeChild(iframe);
+                }
             };
         }
 
-        // 页面加载完成后初始化接口
-        window.onload = initializeApis;
+        // 页面加载完成后初始化
+        window.onload = function() {
+            setPCUserAgent();  // 设置PC端UA
+            initializeApis();  // 初始化接口列表
+        };
     </script>
 </body>
 </html> 
