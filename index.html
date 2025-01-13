@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>W在线视频解析</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f2f5;
+        }
+        
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        
+        .input-group {
+            margin: 20px 0;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        .status {
+            text-align: center;
+            margin: 10px 0;
+            color: #666;
+        }
+        
+        .tips {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>W在线视频解析</h1>
+        
+        <div class="input-group">
+            <input type="text" id="videoUrl" placeholder="请输入需要解析的视频链接">
+        </div>
+        
+        <div class="input-group">
+            <select id="apiSelect">
+                <option value="">正在检测可用接口...</option>
+            </select>
+        </div>
+        
+        <button onclick="parseVideo()">开始解析</button>
+        
+        <div id="status" class="status">正在检测接口...</div>
+        
+        <div class="tips">
+            <p>支持解析：</p>
+            <ul>
+                <li>爱奇艺VIP视频</li>
+                <li>腾讯视频VIP视频</li>
+                <li>优酷VIP视频</li>
+                <li>芒果TV VIP视频</li>
+                <li>其他主流视频网站VIP视频</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const apis = {
+            '解析接口1': 'https://jx.m3u8.tv/jiexi/?url=',
+            '解析接口2': 'https://jx.aidouer.net/?url=',
+            '解析接口3': 'https://jx.playerjy.com/?url=',
+            '解析接口4': 'https://jx.jsonplayer.com/player/?url=',
+            '解析接口5': 'https://jx.xmflv.com/?url=',
+            '解析接口6': 'https://jx.bozrc.com:4433/player/?url=',
+            '解析接口7': 'https://jx.777jiexi.com/player/?url=',
+            '解析接口8': 'https://api.jiexi.la/?url=',
+            '解析接口9': 'https://www.8090g.cn/?url='
+        };
+
+        const workingApis = {};
+        const select = document.getElementById('apiSelect');
+        const status = document.getElementById('status');
+
+        // 检测接口可用性
+        async function checkApis() {
+            status.textContent = '正在检测接口...';
+            select.innerHTML = '<option value="">检测中...</option>';
+            
+            for (const [name, url] of Object.entries(apis)) {
+                try {
+                    const testUrl = url + encodeURIComponent('https://v.qq.com/x/cover/mzc00200f995x6t.html');
+                    const response = await fetch(testUrl, {
+                        method: 'HEAD',
+                        mode: 'no-cors' // 由于跨域限制，我们只能假设接口可用
+                    });
+                    workingApis[name] = url;
+                } catch (error) {
+                    console.log(`接口 ${name} 检测失败`);
+                }
+            }
+            
+            updateApiList();
+        }
+
+        // 更新接口列表
+        function updateApiList() {
+            select.innerHTML = '';
+            const apiNames = Object.keys(workingApis);
+            
+            if (apiNames.length > 0) {
+                apiNames.forEach(name => {
+                    const option = document.createElement('option');
+                    option.value = name;
+                    option.textContent = name;
+                    select.appendChild(option);
+                });
+                status.textContent = `可用接口: ${apiNames.length} 个`;
+            } else {
+                select.innerHTML = '<option value="">暂无可用接口</option>';
+                status.textContent = '警告：没有可用接口';
+            }
+        }
+
+        // 解析视频
+        function parseVideo() {
+            const videoUrl = document.getElementById('videoUrl').value.trim();
+            const selectedName = select.value;
+            
+            if (!videoUrl) {
+                alert('请输入视频链接！');
+                return;
+            }
+            
+            if (!selectedName || !workingApis[selectedName]) {
+                alert('请选择可用的解析接口！');
+                return;
+            }
+            
+            const parseUrl = workingApis[selectedName] + encodeURIComponent(videoUrl);
+            window.open(parseUrl, '_blank');
+        }
+
+        // 页面加载完成后检测接口
+        window.onload = checkApis;
+    </script>
+</body>
+</html> 
