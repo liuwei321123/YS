@@ -10,39 +10,95 @@
             --neon-purple: #9d00ff;
             --dark-bg: #0a0a1f;
             --card-bg: #151528;
+            --gradient-1: linear-gradient(45deg, #00f3ff, #9d00ff);
+            --gradient-2: linear-gradient(135deg, #0a0a1f 0%, #1a1a3a 100%);
+            --glass-bg: rgba(255,255,255,0.03);
+            --glass-border: rgba(0,243,255,0.1);
         }
 
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
             margin: 0;
             padding: 20px;
-            background: var(--dark-bg);
+            background: var(--gradient-2);
             color: #fff;
             min-height: 100vh;
-            background: linear-gradient(135deg, #0a0a1f 0%, #1a1a3a 100%);
+            position: relative;
+            overflow-x: hidden;
         }
         
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(0,243,255,0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(157,0,255,0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
         .container {
             max-width: 800px;
             margin: 0 auto;
             padding: 25px;
-            background: var(--card-bg);
+            background: rgba(21,21,40,0.8);
             border-radius: 15px;
-            box-shadow: 0 0 20px rgba(0,243,255,0.1);
-            border: 1px solid rgba(0,243,255,0.1);
+            box-shadow: 0 0 30px rgba(0,243,255,0.15);
+            border: 1px solid rgba(0,243,255,0.2);
             backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
         }
         
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, transparent 30%, rgba(0,243,255,0.03) 70%);
+            animation: rotate 20s linear infinite;
+            pointer-events: none;
+        }
+
         h1 {
             text-align: center;
             color: #fff;
-            font-size: 2.2em;
+            font-size: 2.5em;
+            font-weight: 800;
             margin-bottom: 30px;
-            text-shadow: 0 0 10px var(--neon-blue),
-                         0 0 20px var(--neon-blue),
-                         0 0 30px var(--neon-blue);
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            position: relative;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            filter: drop-shadow(0 0 15px rgba(0,243,255,0.5));
         }
         
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: var(--gradient-1);
+            border-radius: 3px;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
         .input-group {
             margin: 20px 0;
             position: relative;
@@ -51,19 +107,21 @@
         input[type="text"] {
             width: 100%;
             padding: 12px;
-            background: rgba(255,255,255,0.05);
+            background: rgba(255,255,255,0.03);
             border: 1px solid rgba(0,243,255,0.2);
             border-radius: 8px;
             font-size: 16px;
             color: #fff;
             box-sizing: border-box;
             transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
         }
         
         input[type="text"]:focus {
             outline: none;
             border-color: var(--neon-blue);
-            box-shadow: 0 0 15px rgba(0,243,255,0.3);
+            box-shadow: 0 0 20px rgba(0,243,255,0.3);
+            transform: translateY(-1px);
         }
         
         select {
@@ -100,7 +158,7 @@
         button {
             width: 100%;
             padding: 14px;
-            background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
+            background: var(--gradient-1);
             color: white;
             border: none;
             border-radius: 8px;
@@ -110,8 +168,27 @@
             transition: all 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
         }
         
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+            z-index: -1;
+        }
+
+        button:hover::before {
+            left: 100%;
+        }
+
         button:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0,243,255,0.4);
@@ -151,6 +228,7 @@
             overflow: hidden;
             position: relative;
             box-shadow: 0 0 30px rgba(0,243,255,0.2);
+            aspect-ratio: 16 / 9;
         }
         
         .player-container.active {
@@ -170,7 +248,7 @@
             right: 0;
             bottom: 0;
             background: rgba(10,10,31,0.9);
-            display: flex;
+            display: none;
             align-items: center;
             justify-content: center;
             color: var(--neon-blue);
@@ -260,20 +338,268 @@
             color: rgba(255,255,255,0.6);
             line-height: 1.5;
         }
+
+        /* 链接复制助手样式 */
+        .link-helper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            height: 100%;
+            background: var(--card-bg);
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        .platform-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 20px;
+        }
+
+        .platform-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px;
+            background: rgba(0,243,255,0.1);
+            border: 1px solid rgba(0,243,255,0.2);
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .platform-btn:hover {
+            background: rgba(0,243,255,0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,243,255,0.2);
+        }
+
+        .platform-btn img {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+        }
+
+        .copy-tip {
+            margin-top: 20px;
+            color: rgba(255,255,255,0.6);
+            font-size: 0.9em;
+            text-align: center;
+        }
+
+        kbd {
+            background: rgba(255,255,255,0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid rgba(255,255,255,0.2);
+            font-family: monospace;
+        }
+
+        .site-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .site-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: rgba(0,243,255,0.1);
+        }
+
+        .site-tabs {
+            display: flex;
+            gap: 10px;
+        }
+
+        .site-tab {
+            padding: 8px;
+            background: transparent;
+            border: 1px solid rgba(0,243,255,0.2);
+            border-radius: 5px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .site-tab img {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .site-tab:hover img {
+            transform: scale(1.1);
+        }
+
+        .site-tab.active {
+            background: var(--neon-blue);
+            border-color: var(--neon-blue);
+        }
+
+        .copy-btn {
+            padding: 8px 15px;
+            background: var(--neon-purple);
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 10px rgba(157,0,255,0.3);
+        }
+
+        .site-frame {
+            flex: 1;
+            width: 100%;
+            border: none;
+            background: #fff;
+            margin-top: 10px;
+        }
+
+        .site-search-container {
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .site-search-container input {
+            padding: 8px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(0,243,255,0.2);
+            border-radius: 5px;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .site-search-container button {
+            padding: 8px 15px;
+            width: auto;
+        }
+
+        /* 历史记录样式 */
+        .history-container {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            border: 1px solid rgba(0,243,255,0.1);
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .history-header h3 {
+            color: var(--neon-blue);
+            margin: 0;
+        }
+
+        .history-header button {
+            padding: 5px 10px;
+            font-size: 12px;
+            width: auto;
+        }
+
+        .history-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .history-item {
+            background: rgba(0,243,255,0.05);
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .history-item:hover {
+            background: rgba(0,243,255,0.1);
+            transform: translateY(-2px);
+        }
+
+        .history-title {
+            color: #fff;
+            font-size: 14px;
+            margin-bottom: 5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .history-time {
+            color: rgba(255,255,255,0.5);
+            font-size: 12px;
+        }
+
+        /* 点击特效样式 */
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.4);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            pointer-events: none;
+        }
+
+        .particle {
+            pointer-events: none;
+            position: absolute;
+            background: var(--gradient-1);
+            border-radius: 50%;
+            width: 6px;
+            height: 6px;
+            animation: particle 0.8s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        @keyframes particle {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) scale(0);
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>W在线视频解析</h1>
-        
-        <!-- 添加快捷方式图标 -->
-        <div class="shortcut-icons">
-            <img src="https://www.iqiyi.com/favicon.ico" alt="爱奇艺" title="爱奇艺" class="shortcut-icon" onclick="window.open('https://www.iqiyi.com')">
-            <img src="https://v.qq.com/favicon.ico" alt="腾讯视频" title="腾讯视频" class="shortcut-icon" onclick="window.open('https://v.qq.com')">
-            <img src="https://www.youku.com/favicon.ico" alt="优酷" title="优酷" class="shortcut-icon" onclick="window.open('https://www.youku.com')">
-            <img src="https://www.mgtv.com/favicon.ico" alt="芒果TV" title="芒果TV" class="shortcut-icon" onclick="window.open('https://www.mgtv.com')">
-            <img src="https://www.bilibili.com/favicon.ico" alt="哔哩哔哩" title="哔哩哔哩" class="shortcut-icon" onclick="window.open('https://www.bilibili.com')">
-        </div>
         
         <div class="input-group">
             <input type="text" id="videoUrl" placeholder="请输入需要解析的视频链接">
@@ -287,8 +613,44 @@
         
         <button onclick="parseVideo()">开始解析</button>
         
+        <!-- 添加历史记录区域 -->
+        <div class="history-container">
+            <div class="history-header">
+                <h3>观看历史</h3>
+                <button onclick="clearHistory()">清空历史</button>
+            </div>
+            <div id="historyList" class="history-list">
+                <!-- 历史记录将在这里动态显示 -->
+            </div>
+        </div>
+        
         <!-- 添加播放器容器 -->
         <div id="playerContainer" class="player-container">
+            <!-- 添加链接复制助手 -->
+            <div id="linkHelper" class="link-helper">
+                <div class="site-container">
+                    <div class="site-header">
+                        <div class="site-tabs">
+                            <button class="site-tab active" data-site="iqiyi">
+                                <img src="https://www.iqiyi.com/favicon.ico" alt="爱奇艺" title="爱奇艺">
+                            </button>
+                            <button class="site-tab" data-site="qq">
+                                <img src="https://v.qq.com/favicon.ico" alt="腾讯视频" title="腾讯视频">
+                            </button>
+                            <button class="site-tab" data-site="youku">
+                                <img src="https://www.youku.com/favicon.ico" alt="优酷" title="优酷">
+                            </button>
+                            <button class="site-tab" data-site="mgtv">
+                                <img src="https://www.mgtv.com/favicon.ico" alt="芒果TV" title="芒果TV">
+                            </button>
+                        </div>
+                        <button id="copyUrlBtn" class="copy-btn" style="display: none;">
+                            复制当前链接
+                        </button>
+                    </div>
+                    <iframe id="siteFrame" name="searchFrame" class="site-frame"></iframe>
+                </div>
+            </div>
             <iframe id="videoFrame" class="video-frame" allowfullscreen></iframe>
             <div id="loadingOverlay" class="loading-overlay">
                 <div class="spinner"></div>
@@ -299,14 +661,32 @@
         <div class="tips">
             <h3>使用教程</h3>
             <ol>
-                <li>点击上方图标进入视频网站，或直接访问需要观看的视频页面</li>
-                <li>复制视频页面的完整网址（浏览器地址栏的链接）</li>
-                <li>将复制的链接粘贴到输入框中</li>
-                <li>选择一个解析接口（如果当前接口无法播放，请尝试切换其他接口）</li>
-                <li>点击"开始解析"按钮，等待视频加载完成</li>
-                <li>如需全屏观看，请点击视频右下角的全屏按钮</li>
+                <li>获取视频链接：
+                    <ul>
+                        <li>点击上方图标直接进入视频网站</li>
+                        <li>或从观看历史中选择之前看过的视频</li>
+                    </ul>
+                </li>
+                <li>解析视频：
+                    <ul>
+                        <li>将视频页面的完整网址粘贴到输入框</li>
+                        <li>选择一个解析接口（如果无法播放请切换接口）</li>
+                        <li>点击"开始解析"按钮开始播放</li>
+                    </ul>
+                </li>
+                <li>观看历史：
+                    <ul>
+                        <li>成功解析的视频会自动保存到历史记录</li>
+                        <li>点击历史记录可以快速重新播放</li>
+                        <li>最多保存20条观看记录</li>
+                    </ul>
+                </li>
             </ol>
-            <p>注意：部分视频可能需要尝试多个接口才能正常播放</p>
+            <p>温馨提示：
+                <br>• 部分视频可能需要尝试多个接口才能正常播放
+                <br>• 如需全屏观看，请点击视频右下角的全屏按钮
+                <br>• 清空历史记录后无法恢复，请谨慎操作
+            </p>
         </div>
 
         <div class="footer">
@@ -333,19 +713,182 @@
             }
         }
 
-        // 更新接口列表，将更稳定的接口放在前面
-        const apis = {
-            '超清接口': 'https://jx.xmflv.com/?url=',
-            '稳定接口': 'https://jx.quankan.app/?url=',
-            '备用接口1': 'https://jx.aidouer.net/?url=',
-            '备用接口2': 'https://jx.playerjy.com/?url=',
-            '备用接口3': 'https://parse.mw0.cc/?url='
-        };
+        // 接口采集源
+        const API_COLLECT_URLS = [
+            'https://raw.githubusercontent.com/tv-player/source/main/api.json',
+            'https://raw.githubusercontent.com/2hacc/TVBox/main/api.json',
+            'https://raw.githubusercontent.com/gaotianliuyun/gao/master/api.json'
+        ];
+
+        const API_SOURCES = [
+            'https://jx.xmflv.com/?url=',  // 保持超清接口固定
+            'https://jx.jsonplayer.com/player/?url=',
+            'https://jx.aidouer.net/?url=',
+            'https://jx.playerjy.com/?url=',
+            'https://jx.quankan.app/?url=',
+            'https://jx.m3u8.tv/jiexi/?url=',
+            'https://jx.bozrc.com:4433/player/?url=',
+            'https://jx.parwix.com:4433/player/?url=',
+            'https://jx.blbo.cc:4433/player/?url=',
+            'https://bd.jx.cn/?url=',
+            'https://www.ckmov.vip/api.php?url=',
+            'https://www.h8jx.com/jiexi.php?url=',
+            'https://api.jiexi.la/?url=',
+            'https://jx.ivito.cn/?url=',
+            'https://www.playm3u8.cn/jiexi.php?url=',
+            'https://www.ckplayer.vip/jiexi/?url=',
+            'https://www.pangujiexi.cc/jiexi.php?url=',
+            'https://vip.bljiex.com/?v='
+        ];
+
+        // 从API源获取更多接口
+        async function collectApis() {
+            let collectedApis = [];
+            
+            for (const url of API_COLLECT_URLS) {
+                try {
+                    const response = await fetch(url);
+                    const data = await response.json();
+                    
+                    // 解析不同格式的API配置
+                    if (data.parses) {
+                        collectedApis = collectedApis.concat(
+                            data.parses
+                                .filter(item => item.url && item.url.includes('?url='))
+                                .map(item => item.url)
+                        );
+                    } else if (data.sites) {
+                        collectedApis = collectedApis.concat(
+                            data.sites
+                                .filter(item => item.api && item.api.includes('?url='))
+                                .map(item => item.api)
+                        );
+                    }
+                } catch (error) {
+                    console.log(`从 ${url} 获取API失败:`, error);
+                }
+            }
+            
+            // 去重并添加到API_SOURCES
+            const uniqueApis = [...new Set(collectedApis)];
+            API_SOURCES.push(...uniqueApis);
+            console.log(`共收集到 ${uniqueApis.length} 个新接口`);
+        }
+
+        // 测试视频链接
+        const TEST_URLS = [
+            'https://v.qq.com/x/cover/mzc00200f995x6t.html',
+            'https://www.iqiyi.com/v_19rr1skib0.html',
+            'https://www.youku.com/v_show/id_XNDkwMTY5NDc4MA==.html'
+        ];
+
+        // 检测接口可用性
+        async function checkApiAvailability(apiUrl) {
+            // 检查URL格式
+            if (!apiUrl.includes('?url=')) {
+                return false;
+            }
+
+            const testUrl = TEST_URLS[Math.floor(Math.random() * TEST_URLS.length)];
+            const fullUrl = apiUrl + encodeURIComponent(testUrl);
+            
+            try {
+                const timeoutPromise = new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error('Timeout')), 3000)  // 缩短超时时间
+                );
+                
+                const fetchPromise = fetch(fullUrl, {
+                    method: 'HEAD',
+                    mode: 'no-cors'
+                });
+                
+                await Promise.race([fetchPromise, timeoutPromise]);
+                return true;
+            } catch (error) {
+                console.log(`接口 ${apiUrl} 测试失败:`, error.message);
+                return false;
+            }
+        }
+
+        // 更新接口状态显示
+        function updateApiStatus(message) {
+            const statusElem = document.createElement('div');
+            statusElem.style.color = 'var(--neon-blue)';
+            statusElem.style.fontSize = '0.9em';
+            statusElem.style.marginTop = '5px';
+            statusElem.textContent = message;
+            select.parentNode.appendChild(statusElem);
+            
+            // 3秒后移除状态消息
+            setTimeout(() => statusElem.remove(), 3000);
+        }
+
+        // 自动检测并更新接口列表
+        async function autoUpdateApis() {
+            updateApiStatus('正在收集和检测接口...');
+            
+            // 先收集新接口
+            await collectApis();
+            
+            const workingApis = {
+                '超清接口': API_SOURCES[0]  // 保持超清接口固定
+            };
+            
+            // 并行检测所有接口
+            const checks = API_SOURCES.slice(1).map(async (api) => {
+                const isWorking = await checkApiAvailability(api);
+                if (isWorking) {
+                    const name = `备用接口${Object.keys(workingApis).length}`;
+                    workingApis[name] = api;
+                }
+            });
+            
+            await Promise.all(checks);
+            
+            // 更新全局接口列表
+            apis = workingApis;
+            
+            // 重新初始化下拉框
+            initializeApis();
+            
+            updateApiStatus(`检测完成，共找到 ${Object.keys(workingApis).length} 个可用接口`);
+
+            // 本地存储可用接口
+            try {
+                localStorage.setItem('workingApis', JSON.stringify(workingApis));
+            } catch (e) {
+                console.log('存储接口失败:', e);
+            }
+        }
+
+        // 从本地存储加载上次可用的接口
+        function loadCachedApis() {
+            try {
+                const cached = localStorage.getItem('workingApis');
+                if (cached) {
+                    apis = JSON.parse(cached);
+                    initializeApis();
+                    updateApiStatus('已加载缓存接口');
+                }
+            } catch (e) {
+                console.log('加载缓存接口失败:', e);
+            }
+        }
+
+        // 初始化空接口对象
+        let apis = {};
 
         const select = document.getElementById('apiSelect');
         const playerContainer = document.getElementById('playerContainer');
         const videoFrame = document.getElementById('videoFrame');
         const loadingOverlay = document.getElementById('loadingOverlay');
+
+        // 添加刷新接口按钮
+        const refreshButton = document.createElement('button');
+        refreshButton.textContent = '刷新接口';
+        refreshButton.style.marginTop = '10px';
+        refreshButton.onclick = autoUpdateApis;
+        select.parentNode.appendChild(refreshButton);
 
         // 初始化接口选择
         function initializeApis() {
@@ -358,6 +901,79 @@
             });
             select.value = '超清接口';  // 设置默认选中第一个接口
         }
+
+        // 初始化链接复制助手
+        function initLinkHelper() {
+            const siteFrame = document.getElementById('siteFrame');
+            const copyUrlBtn = document.getElementById('copyUrlBtn');
+            
+            // 处理标签页点击
+            document.querySelectorAll('.site-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const site = this.dataset.site;
+                    document.querySelectorAll('.site-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // 根据平台打开相应网站的搜索页面
+                    let url;
+                    switch(site) {
+                        case 'iqiyi':
+                            url = 'https://so.iqiyi.com/so/q_';
+                            break;
+                        case 'qq':
+                            url = 'https://v.qq.com/x/search/?q=';
+                            break;
+                        case 'youku':
+                            url = 'https://so.youku.com/search_video/q_';
+                            break;
+                        case 'mgtv':
+                            url = 'https://so.mgtv.com/so/k-';
+                            break;
+                        default:
+                            return;
+                    }
+                    
+                    // 添加搜索输入框和按钮
+                    const searchContainer = document.createElement('div');
+                    searchContainer.style.padding = '10px';
+                    searchContainer.style.background = 'var(--card-bg)';
+                    searchContainer.style.display = 'flex';
+                    searchContainer.style.gap = '10px';
+                    searchContainer.innerHTML = `
+                        <input type="text" id="siteSearch" placeholder="输入影片名称搜索" style="flex: 1;">
+                        <button onclick="window.open('${url}' + encodeURIComponent(document.getElementById('siteSearch').value))">搜索</button>
+                    `;
+                    
+                    // 清除之前的搜索框
+                    const oldSearch = document.querySelector('.site-search-container');
+                    if (oldSearch) oldSearch.remove();
+                    
+                    // 添加新的搜索框
+                    searchContainer.className = 'site-search-container';
+                    document.querySelector('.site-header').appendChild(searchContainer);
+                    
+                    // 添加回车键搜索功能
+                    const searchInput = document.getElementById('siteSearch');
+                    searchInput.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            window.open(url + encodeURIComponent(this.value));
+                        }
+                    });
+                    
+                    copyUrlBtn.style.display = 'block';
+                });
+            });
+        }
+
+        // 页面加载完成后初始化
+        window.onload = function() {
+            setPCUserAgent();  // 设置PC端UA
+            loadCachedApis();  // 先加载缓存的接口
+            autoUpdateApis();  // 自动检测并更新接口
+            initLinkHelper(); // 初始化链接复制助手
+            initPlayerState(); // 初始化播放器状态
+            updateHistoryDisplay(); // 显示历史记录
+        };
 
         // 解析视频
         function parseVideo() {
@@ -374,9 +990,16 @@
                 return;
             }
             
+            // 添加到历史记录
+            addToHistory(videoUrl);
+            
             // 显示播放器容器和加载动画
             playerContainer.classList.add('active');
+            document.getElementById('linkHelper').style.display = 'none';
             loadingOverlay.style.display = 'flex';
+            
+            // 显示视频框架
+            videoFrame.style.display = 'block';
             
             // 设置iframe源
             const iframe = document.createElement('iframe');
@@ -403,11 +1026,196 @@
             };
         }
 
-        // 页面加载完成后初始化
-        window.onload = function() {
-            setPCUserAgent();  // 设置PC端UA
-            initializeApis();  // 初始化接口列表
-        };
+        // 初始化播放器状态
+        function initPlayerState() {
+            const playerContainer = document.getElementById('playerContainer');
+            const videoFrame = document.getElementById('videoFrame');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const linkHelper = document.getElementById('linkHelper');
+
+            // 初始状态：只显示链接助手
+            playerContainer.style.display = 'block';
+            videoFrame.style.display = 'none';
+            loadingOverlay.style.display = 'none';
+            linkHelper.style.display = 'flex';
+        }
+
+        // 历史记录相关函数
+        function addToHistory(url) {
+            try {
+                // 获取现有历史记录
+                let history = JSON.parse(localStorage.getItem('videoHistory') || '[]');
+                
+                // 获取视频标题（从URL中提取）
+                let title = getVideoTitle(url);
+                
+                // 创建新的历史记录项
+                const newItem = {
+                    url: url,
+                    title: title,
+                    time: new Date().toLocaleString()
+                };
+                
+                // 检查是否已存在相同URL的记录
+                const index = history.findIndex(item => item.url === url);
+                if (index !== -1) {
+                    // 如果存在，更新时间并移到最前
+                    history.splice(index, 1);
+                }
+                
+                // 添加新记录到开头
+                history.unshift(newItem);
+                
+                // 只保留最近20条记录
+                history = history.slice(0, 20);
+                
+                // 保存到localStorage
+                localStorage.setItem('videoHistory', JSON.stringify(history));
+                
+                // 更新显示
+                updateHistoryDisplay();
+            } catch (e) {
+                console.error('保存历史记录失败:', e);
+            }
+        }
+        
+        // 从URL中提取视频标题
+        function getVideoTitle(url) {
+            try {
+                const urlObj = new URL(url);
+                // 提取视频信息
+                if (url.includes('iqiyi.com')) {
+                    // 爱奇艺链接格式：https://www.iqiyi.com/v_1234567890.html
+                    // 或 https://www.iqiyi.com/v_1234567890/episode12.html
+                    const pathParts = url.split('/');
+                    const lastPart = pathParts[pathParts.length - 1];
+                    const episodeMatch = lastPart.match(/episode(\d+)/);
+                    const episode = episodeMatch ? `第${episodeMatch[1]}集` : '';
+                    
+                    // 尝试从URL中提取更多信息
+                    const titleMatch = url.match(/v_([^\/]+)/);
+                    const title = titleMatch ? decodeURIComponent(titleMatch[1].replace(/[-_]/g, ' ')) : '爱奇艺视频';
+                    
+                    return episode ? `${title} ${episode}` : title;
+                } else if (url.includes('v.qq.com')) {
+                    // 腾讯视频链接格式：https://v.qq.com/x/cover/abcd123/efgh456.html
+                    const matches = url.match(/\/([^\/]+)\/([^\/]+)\.html/);
+                    if (matches) {
+                        const videoId = matches[2];
+                        // 检查是否包含集数信息
+                        const episodeMatch = videoId.match(/\d+$/);
+                        const episode = episodeMatch ? `第${episodeMatch[0]}集` : '';
+                        const title = videoId.replace(/\d+$/, '').replace(/[-_]/g, ' ');
+                        return episode ? `${title} ${episode}` : title;
+                    }
+                    return '腾讯视频';
+                } else if (url.includes('youku.com')) {
+                    // 优酷链接格式：https://v.youku.com/v_show/id_ABCD123==.html
+                    const idMatch = url.match(/id_([^=]+)==/);
+                    if (idMatch) {
+                        const videoId = idMatch[1];
+                        // 检查是否包含集数信息
+                        const episodeMatch = videoId.match(/ep(\d+)/i);
+                        const episode = episodeMatch ? `第${episodeMatch[1]}集` : '';
+                        const title = videoId.replace(/ep\d+/i, '').replace(/[-_]/g, ' ');
+                        return episode ? `${title} ${episode}` : title;
+                    }
+                    return '优酷视频';
+                } else if (url.includes('mgtv.com')) {
+                    // 芒果TV链接格式：https://www.mgtv.com/b/123456/1234567.html
+                    const matches = url.match(/\/(\d+)\/(\d+)\.html/);
+                    if (matches) {
+                        const seriesId = matches[1];
+                        const episodeId = matches[2];
+                        // 尝试从episodeId提取集数
+                        const episode = episodeId !== seriesId ? `第${episodeId.slice(-2)}集` : '';
+                        return episode ? `芒果视频 ${episode}` : '芒果视频';
+                    }
+                    return '芒果视频';
+                } else {
+                    return '未知视频';
+                }
+            } catch (e) {
+                return '未知视频';
+            }
+        }
+        
+        // 更新历史记录显示
+        function updateHistoryDisplay() {
+            const historyList = document.getElementById('historyList');
+            try {
+                const history = JSON.parse(localStorage.getItem('videoHistory') || '[]');
+                
+                historyList.innerHTML = history.map(item => `
+                    <div class="history-item" onclick="loadHistoryVideo('${item.url}')">
+                        <div class="history-title">
+                            ${item.title}
+                            ${item.title.includes('第') ? '' : '<small style="color: rgba(255,255,255,0.5);">完整版</small>'}
+                        </div>
+                        <div class="history-time">${item.time}</div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                console.error('显示历史记录失败:', e);
+                historyList.innerHTML = '<p style="color: red;">加载历史记录失败</p>';
+            }
+        }
+        
+        // 清空历史记录
+        function clearHistory() {
+            if (confirm('确定要清空所有观看历史吗？')) {
+                localStorage.removeItem('videoHistory');
+                updateHistoryDisplay();
+            }
+        }
+        
+        // 加载历史记录中的视频
+        function loadHistoryVideo(url) {
+            document.getElementById('videoUrl').value = url;
+            parseVideo();
+        }
+
+        // 添加点击特效
+        document.addEventListener('click', function(e) {
+            // 波纹效果
+            const ripple = document.createElement('div');
+            ripple.className = 'ripple';
+            ripple.style.left = e.clientX + 'px';
+            ripple.style.top = e.clientY + 'px';
+            document.body.appendChild(ripple);
+            
+            // 粒子效果
+            for (let i = 0; i < 8; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = e.clientX + 'px';
+                particle.style.top = e.clientY + 'px';
+                particle.style.transform = `rotate(${i * 45}deg)`;
+                document.body.appendChild(particle);
+                
+                // 移除粒子
+                setTimeout(() => particle.remove(), 800);
+            }
+            
+            // 移除波纹
+            setTimeout(() => ripple.remove(), 600);
+        });
+        
+        // 优化按钮点击效果
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('click', function(e) {
+                const x = e.offsetX;
+                const y = e.offsetY;
+                
+                const ripple = document.createElement('div');
+                ripple.className = 'ripple';
+                ripple.style.left = x + 'px';
+                ripple.style.top = y + 'px';
+                
+                this.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
     </script>
 </body>
 </html> 
